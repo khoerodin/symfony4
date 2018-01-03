@@ -19,9 +19,9 @@ class ProductController extends Controller
         $em = $this->getDoctrine()->getManager();
 
         $product = new Product();
-        $product->setName('Keyboard');
+        $product->setName('Product name '  .  microtime());
         $product->setPrice(19.99);
-        $product->setDescription('Ergonomic and stylish!');
+        $product->setDescription('Ergonomic and stylish '  .  microtime());
 
         // tell Doctrine you want to (eventually) save the Product (no queries yet)
         $em->persist($product);
@@ -29,12 +29,12 @@ class ProductController extends Controller
         // actually executes the queries (i.e. the INSERT query)
         $em->flush();
 
-        return new Response('Saved new product with id '.$product->getId());
+        return new Response('Saved new product with name '.$product->getName());
     }
 
     /**
      * @Route("/product/{id}", name="product_show")
-     * @param $id
+     * @param Product $product
      * @return Response
      */
     public function showAction(Product $product)
@@ -57,6 +57,20 @@ class ProductController extends Controller
     }
 
     /**
+     * @Route("/product/greather-than/{price}", name="product_greather_than")
+     * @param $price
+     * @return Response
+     */
+    public function greatherThanAction($price)
+    {
+        $products = $this->getDoctrine()
+            ->getRepository(Product::class)
+            ->findAllGreaterThanPrice($price);
+
+        return $this->render('greather.html.twig', ['products' => $products]);
+    }
+
+    /**
      * @Route("/product/edit/{id}")
      * @param $id
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
@@ -72,7 +86,7 @@ class ProductController extends Controller
             );
         }
 
-        $product->setName('New product name!');
+        $product->setName('Product name '  .  microtime());
         $em->flush();
 
         return $this->redirectToRoute('product_show', [
