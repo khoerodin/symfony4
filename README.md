@@ -7,9 +7,11 @@ by [Khoerodin](https://khoerodin.id)
 git clone https://github.com/khoerodin/symfony4.git
 cd symfony4
 composer install
+```
 
-// then config your DB on .env file, and:
+_then config your DB on .env file, and:_
 
+```bash
 php bin/console doctrine:database:create
 php bin/console doctrine:migrations:migrate
 ```
