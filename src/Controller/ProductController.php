@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Category;
 use App\Entity\Product;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -14,22 +15,26 @@ class ProductController extends Controller
      */
     public function index()
     {
-        // you can fetch the EntityManager via $this->getDoctrine()
-        // or you can add an argument to your action: index(EntityManagerInterface $em)
-        $em = $this->getDoctrine()->getManager();
+        $category = new Category();
+        $category->setName('Computer Peripherals');
 
         $product = new Product();
-        $product->setName('Product name '  .  microtime());
+        $product->setName('Keyboard');
         $product->setPrice(19.99);
-        $product->setDescription('Ergonomic and stylish '  .  microtime());
+        $product->setDescription('Ergonomic and stylish!');
 
-        // tell Doctrine you want to (eventually) save the Product (no queries yet)
+        // relate this product to the category
+        $product->setCategory($category);
+
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($category);
         $em->persist($product);
-
-        // actually executes the queries (i.e. the INSERT query)
         $em->flush();
 
-        return new Response('Saved new product with name '.$product->getName());
+        return new Response(
+            'Saved new product with id: '.$product->getId()
+            .' and new category with id: '.$category->getId()
+        );
     }
 
     /**
