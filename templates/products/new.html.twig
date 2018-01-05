@@ -1,0 +1,47 @@
+<form action="/product/save" method="POST">
+    <div>
+        <label for="name">NAME</label>
+    </div>
+    <div>
+        <input type="text" name="name" id="name">
+    </div>
+
+    <div>
+        <label for="price">PRICE</label>
+    </div>
+    <div>
+        <input type="text" name="price" id="price">
+    </div>
+
+    <div>
+        <label for="description">DESCRIPTION</label>
+    </div>
+    <div>
+        <input type="text" name="description" id="description">
+    </div>
+
+    <div>
+        <label for="description">CATEGORY</label>
+    </div>
+    <div>
+        <select name="category" id="category">
+            {% for category in categories %}
+                <option value="{{ category.id }}">{{ category.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div>
+        <label for=""></label>
+    </div>
+    <div>
+        <input type="submit" value="SAVE">
+    </div>
+</form>
+
+<style>
+    * {
+        font-family: 'Menlo', 'Monaco', monospace;
+        font-size: medium;
+    }
+</style>

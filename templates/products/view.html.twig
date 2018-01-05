@@ -1,0 +1,49 @@
+<form action="/product/update" method="POST">
+    <div>
+        <label for="name">NAME</label>
+    </div>
+    <div>
+        <input type="text" name="name" value="{{ product.name }}" id="name">
+    </div>
+
+    <div>
+        <label for="price">PRICE</label>
+    </div>
+    <div>
+        <input type="text" name="price" value="{{ product.price }}" id="price">
+    </div>
+
+    <div>
+        <label for="description">DESCRIPTION</label>
+    </div>
+    <div>
+        <input type="text" name="description" value="{{ product.description }}" id="description">
+    </div>
+
+    <div>
+        <label for="description">CATEGORY</label>
+    </div>
+    <div>
+        <select name="category" id="category">
+            {% for category in categories %}
+            <option value="{{ category.id }}" {% if category.id == product.category.id %}selected{% endif %}>{{ category.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <input type="hidden" name="id" value="{{ product.id }}">
+
+    <div>
+        <label for=""></label>
+    </div>
+    <div>
+        <input type="submit" value="UPDATE">
+    </div>
+</form>
+
+<style>
+    * {
+        font-family: 'Menlo', 'Monaco', monospace;
+        font-size: medium;
+    }
+</style>

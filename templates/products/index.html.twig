@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Computer List</title>
+
+    <style>
+        body {
+            font-family: 'Menlo', 'Monaco', monospace;
+            font-size: medium;
+        }
+        table {
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        .text-green {
+            color: green;
+        }
+        .text-red {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="/product/new">ADD</a>
+
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>NAME</th>
+            <th>PRICE</th>
+            <th>DESCRIPTION</th>
+            <th>CATEGORY</th>
+            <th>ACTION</th>
+        </tr>
+
+        {% for product in products %}
+            <tr>
+                <td>{{ product.id }}</td>
+                <td>{{ product.name }}</td>
+                <td>{{ product.price }}</td>
+                <td>{{ product.description }}</td>
+                <td>{{ product.category.name }}</td>
+                <td>
+                    <a href="/product/view/{{ product.id }}" class="text-green">edit</a>
+                    <a href="/product/delete/{{ product.id }}" class="text-red">delete</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+</body>
+
+</html>

@@ -6,6 +6,7 @@ use App\Entity\Category;
 use App\Entity\Product;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class ProductController extends Controller
@@ -15,50 +16,93 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $category = new Category();
-        $category->setName('Computer Peripherals');
+        $repository = $this->getDoctrine()->getRepository(Product::class);
+        $products = $repository->findAll();
 
-        $product = new Product();
-        $product->setName('Keyboard');
-        $product->setPrice(19.99);
-        $product->setDescription('Ergonomic and stylish!');
+        return $this->render('products/index.html.twig', ['products' => $products]);
 
-        // relate this product to the category
-        $product->setCategory($category);
-
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($category);
-        $em->persist($product);
-        $em->flush();
-
-        return new Response(
-            'Saved new product with id: '.$product->getId()
-            .' and new category with id: '.$category->getId()
-        );
     }
 
     /**
-     * @Route("/product/{id}", name="product_show")
+     * @Route("/product/new", name="product_new")
+     */
+    public function newAction()
+    {
+        $repository = $this->getDoctrine()->getRepository(Category::class);
+        $categories = $repository->findAll();
+        return $this->render('products/new.html.twig', ['categories' => $categories]);
+    }
+
+    /**
+     * @Route("/product/save", name="product_save")
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function saveAction(Request $request)
+    {
+        $name = $request->request->get('name');
+        $price = $request->request->get('price');
+        $description = $request->request->get('description');
+        $category = $request->request->get('category');
+
+        $em = $this->getDoctrine()->getManager();
+        $category = $em->getRepository(Category::class)->find($category);
+
+        $product = new Product();
+        $product->setName($name);
+        $product->setPrice($price);
+        $product->setDescription($description);
+        $product->setCategory($category);
+
+        $em->persist($product);
+        $em->flush();
+
+        return $this->redirectToRoute('product');
+    }
+
+    /**
+     * @Route("/product/view/{id}", name="product_show")
      * @param Product $product
      * @return Response
      */
     public function showAction(Product $product)
     {
-        /*$product = $this->getDoctrine()
-            ->getRepository(Product::class)
-            ->find($id);
+        $repository = $this->getDoctrine()->getRepository(Category::class);
+        $categories = $repository->findAll();
+        return $this->render('products/view.html.twig', ['product' => $product, 'categories' => $categories]);
+    }
+
+    /**
+     * @Route("/product/update")
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function updateAction(Request $request)
+    {
+        $id = $request->request->get('id');
+        $name = $request->request->get('name');
+        $price = $request->request->get('price');
+        $description = $request->request->get('description');
+        $category = $request->request->get('category');
+
+        $em = $this->getDoctrine()->getManager();
+        $product = $em->getRepository(Product::class)->find($id);
+        $category = $em->getRepository(Category::class)->find($category);
 
         if (!$product) {
             throw $this->createNotFoundException(
                 'No product found for id '.$id
             );
-        }*/
+        }
 
-        return new Response('Check out this great product: '.$product->getName());
+        $product->setName($name);
+        $product->setPrice($price);
+        $product->setDescription($description);
+        $product->setCategory($category);
 
-        // or render a template
-        // in the template, print things with {{ product.name }}
-        // return $this->render('product/show.html.twig', ['product' => $product]);
+        $em->flush();
+
+        return $this->redirectToRoute('product');
     }
 
     /**
@@ -73,30 +117,6 @@ class ProductController extends Controller
             ->findAllGreaterThanPrice($price);
 
         return $this->render('greather.html.twig', ['products' => $products]);
-    }
-
-    /**
-     * @Route("/product/edit/{id}")
-     * @param $id
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
-     */
-    public function updateAction($id)
-    {
-        $em = $this->getDoctrine()->getManager();
-        $product = $em->getRepository(Product::class)->find($id);
-
-        if (!$product) {
-            throw $this->createNotFoundException(
-                'No product found for id '.$id
-            );
-        }
-
-        $product->setName('Product name '  .  microtime());
-        $em->flush();
-
-        return $this->redirectToRoute('product_show', [
-            'id' => $product->getId()
-        ]);
     }
 
     /**
@@ -118,6 +138,6 @@ class ProductController extends Controller
         $em->remove($product);
         $em->flush();
 
-        return new Response('Deleted product: id '.$id);
+        return $this->redirectToRoute('product');
     }
 }
